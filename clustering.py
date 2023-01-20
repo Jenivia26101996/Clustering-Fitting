@@ -13,6 +13,7 @@ from scipy.optimize import curve_fit
 import scipy.optimize as opt
 import err_ranges as err
 
+"""merged data to get all the 4 factors for the year 2015"""
 hiv_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/AIDS_data.csv",skiprows=(4))
 deathrate_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/deathrate_data.csv",skiprows=(4))
 tb_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/tuberculosis_data.csv",skiprows=(4))
@@ -240,7 +241,7 @@ plt.savefig("expfit.png",bbox_inches="tight")
 plt.show()
 print()
 
-# Increase scale factor and growth rate until rough fit
+"""Increase scale factor and growth rate until rough fit"""
 tb, covar = opt.curve_fit(logistics, df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"],
 p0=(2e9, 0.05, 1990.0))
 print("Fit parameter", tb)
@@ -255,7 +256,7 @@ plt.ylabel("Incidence of tuberculosis (per 100,000 people)")
 plt.savefig("logisticsfit.png",bbox_inches="tight")
 plt.show()
 
-# Function for returning upper and lower limits of the error ranges.
+"""Function for returning upper and lower limits of the error ranges."""
 sigma = np.sqrt(np.diag(covar))
 print(sigma)
 low, up = err.err_ranges(df_tb["Year"], logistics, tb, sigma)
@@ -269,7 +270,7 @@ plt.xlabel("Year")
 plt.ylabel("Incidence of tuberculosis (per 100,000 people)")
 plt.show()
 
-# Forcasting the future values
+"""Forcasting the future values"""
 print("Forcasted IIncidence of tuberculosis (per 100,000 people)")
 low, up = err.err_ranges(2030, logistics, tb, sigma)
 mean = (up+low) / 2.0
