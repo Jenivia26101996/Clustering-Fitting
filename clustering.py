@@ -13,9 +13,6 @@ from scipy.optimize import curve_fit
 import scipy.optimize as opt
 import err_ranges as err
 
-
-
-
 hiv_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/AIDS_data.csv",skiprows=(4))
 deathrate_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/deathrate_data.csv",skiprows=(4))
 tb_data=pd.read_csv("C:/Users/Huawei/Desktop/ADSAssign2/Clustering-Fitting/tuberculosis_data.csv",skiprows=(4))
@@ -77,6 +74,7 @@ plt.savefig("heatmap.png",bbox_inches="tight")
 plt.show()
     
 def matrixplot(df):
+    """Returns matrix plot"""
     sm=pd.plotting.scatter_matrix(df,figsize=(11,11),diagonal='kde',alpha=0.2)
     #Change label rotation
     plt.figure(figsize = (10,8),dpi=144)
@@ -198,11 +196,11 @@ df_tb = pd.read_excel("df3.xlsx") # Reads the file with population data into dat
 print(df_tb) # printing the df_imports
 
 # fitting the exponential growth
-imports, covar = opt.curve_fit(exp_growth, df_tb["Year"],df_tb["Incidence of tuberculosis (per 100,000 people)"])
+tb, covar = opt.curve_fit(exp_growth, df_tb["Year"],df_tb["Incidence of tuberculosis (per 100,000 people)"])
 
 # Plotting the first attempt
-print("Fit parameter", imports)
-df_tb["imp_exp"] = exp_growth(df_tb["Year"], *imports)
+print("Fit parameter", tb)
+df_tb["imp_exp"] = exp_growth(df_tb["Year"], *tb)
 plt.figure()
 plt.plot(df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"], label="data")
 plt.plot(df_tb["Year"], df_tb["imp_exp"], label="fit")
@@ -221,16 +219,16 @@ plt.plot(df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"],
 plt.plot(df_tb["Year"], df_tb["pop_exp"], label="fit")
 plt.legend()
 plt.xlabel("year")
-plt.ylabel("Imports of goods and services (% of GDP)")
+plt.ylabel("Incidence of tuberculosis (per 100,000 people)")
 plt.title("Improved start value")
 plt.show()
 
 # fit exponential growth
-imports, covar = opt.curve_fit(exp_growth, df_tb["Year"],
+tb, covar = opt.curve_fit(exp_growth, df_tb["Year"],
 df_tb["Incidence of tuberculosis (per 100,000 people)"], p0=[4e8, 0.02])
 
-print("Fit parameter", imports)
-df_tb["imp_exp"] = exp_growth(df_tb["Year"], *imports)
+print("Fit parameter", tb)
+df_tb["imp_exp"] = exp_growth(df_tb["Year"], *tb)
 plt.figure()
 plt.plot(df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"], label="data")
 plt.plot(df_tb["Year"], df_tb["imp_exp"], label="fit")
@@ -243,10 +241,10 @@ plt.show()
 print()
 
 # Increase scale factor and growth rate until rough fit
-imports, covar = opt.curve_fit(logistics, df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"],
+tb, covar = opt.curve_fit(logistics, df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"],
 p0=(2e9, 0.05, 1990.0))
-print("Fit parameter", imports)
-df_tb["imp_log"] = logistics(df_tb["Year"], *imports)
+print("Fit parameter", tb)
+df_tb["imp_log"] = logistics(df_tb["Year"], *tb)
 plt.figure()
 plt.title("logistics function")
 plt.plot(df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"], label="data")
@@ -260,7 +258,7 @@ plt.show()
 # Function for returning upper and lower limits of the error ranges.
 sigma = np.sqrt(np.diag(covar))
 print(sigma)
-low, up = err.err_ranges(df_tb["Year"], logistics, imports, sigma)
+low, up = err.err_ranges(df_tb["Year"], logistics, tb, sigma)
 plt.figure()
 plt.title("Incidence of tuberculosis (per 100,000 people)")
 plt.plot(df_tb["Year"], df_tb["Incidence of tuberculosis (per 100,000 people)"], label="data")
@@ -273,15 +271,15 @@ plt.show()
 
 # Forcasting the future values
 print("Forcasted IIncidence of tuberculosis (per 100,000 people)")
-low, up = err.err_ranges(2030, logistics, imports, sigma)
+low, up = err.err_ranges(2030, logistics, tb, sigma)
 mean = (up+low) / 2.0
 pm = (up-low) / 2.0
 print("2030:", mean, "+/-", pm)
-low, up = err.err_ranges(2040, logistics, imports, sigma)
+low, up = err.err_ranges(2040, logistics, tb, sigma)
 mean = (up+low) / 2.0
 pm = (up-low) / 2.0
 print("2040:", mean, "+/-", pm)
-low, up = err.err_ranges(2050, logistics, imports, sigma)
+low, up = err.err_ranges(2050, logistics, tb, sigma)
 mean = (up+low) / 2.0
 pm = (up-low) / 2.0
 print("2050:", mean, "+/-", pm)
